@@ -5,14 +5,14 @@ import {
   ManyToOne,
   CreateDateColumn,
 } from 'typeorm';
-import { User } from '../user/user.entity'; // 假设 User 实体位于 ../user/user.entity
+import { User } from '../users/users.entity'; // 假设 User 实体位于 ../user/user.entity
 
 @Entity('daily_expenses')
 export class DailyExpense {
   @PrimaryGeneratedColumn('uuid')
   id: string; // 消费记录ID，使用 UUID
 
-  @ManyToOne(() => User, (user) => user.expenses, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.dailyExpense, { onDelete: 'CASCADE' })
   user: User; // 关联的用户，设置为多对一关系
 
   @Column('decimal', { precision: 10, scale: 2 })
