@@ -18,6 +18,13 @@ export class DailyExpensesService {
     return this.dailyExpenseRepository.save(expense);
   }
 
+  async createBatch(
+    createDailyExpenseDtos: CreateDailyExpenseDto[],
+  ): Promise<DailyExpense[]> {
+    const expenses = this.dailyExpenseRepository.create(createDailyExpenseDtos);
+    return this.dailyExpenseRepository.save(expenses); // 批量插入
+  }
+
   async findAll(userId: string): Promise<DailyExpense[]> {
     return this.dailyExpenseRepository.find({
       where: { user: { id: userId } },

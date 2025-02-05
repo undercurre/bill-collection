@@ -19,7 +19,6 @@ export class DailyExpensesController {
   constructor(private readonly dailyExpensesService: DailyExpensesService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   async create(
     @Body() createDailyExpenseDto: Omit<CreateDailyExpenseDto, 'userId'>,
     @Request() req,
@@ -29,6 +28,21 @@ export class DailyExpensesController {
       userId: req.user.userId,
       ...createDailyExpenseDto,
     });
+  }
+
+  @Post('create/batch')
+  async createBatch(
+    @Body() createDailyExpenseDtos: Omit<CreateDailyExpenseDto, 'userId'>[],
+    @Request() req,
+  ) {
+    return this.dailyExpensesService.createBatch(
+      createDailyExpenseDtos.map((item) => {
+        return {
+          userId: req.user.userId,
+          ...item,
+        };
+      }),
+    );
   }
 
   @Get()
