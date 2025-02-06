@@ -7,11 +7,9 @@ import {
   Delete,
   Query,
   Request,
-  UseGuards,
 } from '@nestjs/common';
 import { DailyExpensesService } from './daily-expenses.service';
 import { CreateDailyExpenseDto } from './daily-expenses.dto';
-import { JwtAuthGuard } from 'src/guard/jwt/jwt-auth.guard';
 import { isPublic } from 'src/guard/jwt/public.decorator';
 
 @Controller('daily-expenses')
@@ -32,11 +30,12 @@ export class DailyExpensesController {
 
   @Post('create/batch')
   async createBatch(
-    @Body() createDailyExpenseDtos: Omit<CreateDailyExpenseDto, 'userId'>[],
+    @Body()
+    createDailyExpenseDtos: { list: Omit<CreateDailyExpenseDto, 'userId'>[] },
     @Request() req,
   ) {
     return this.dailyExpensesService.createBatch(
-      createDailyExpenseDtos.map((item) => {
+      createDailyExpenseDtos.list.map((item) => {
         return {
           userId: req.user.userId,
           ...item,
