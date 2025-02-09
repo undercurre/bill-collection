@@ -3,18 +3,31 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DailyExpense } from './daily-expenses.entity';
 import { CreateDailyExpenseDto } from './daily-expenses.dto';
+import { User } from 'src/users/users.entity';
 
 @Injectable()
 export class DailyExpensesService {
   constructor(
     @InjectRepository(DailyExpense)
     private readonly dailyExpenseRepository: Repository<DailyExpense>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async create(
     createDailyExpenseDto: CreateDailyExpenseDto,
   ): Promise<DailyExpense> {
-    const expense = this.dailyExpenseRepository.create(createDailyExpenseDto);
+    // 查找 User 实体
+    const user = await this.userRepository.findOne({
+      where: { id: createDailyExpenseDto.userId },
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const expense = this.dailyExpenseRepository.create({
+      ...createDailyExpenseDto,
+      user,
+    });
     return this.dailyExpenseRepository.save(expense);
   }
 
